@@ -3,7 +3,6 @@ QT       += core gui
 TARGET = DevArtGen
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
         mainwindow.cpp
 
