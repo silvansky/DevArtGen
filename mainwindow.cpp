@@ -133,14 +133,16 @@ void MainWindow::generate()
 
 	p.save();
 
-	p.translate(320, 240);
+
 
 	for (int i = 0; i < qrand()%20000; i++)
 	{
 		c.setRgb(qrand()%255, qrand()%255, qrand()%255, qrand()%155+100);
 		p.setPen(QPen(c, qrand()%4 + 1));
 		p.setBrush(c);
+		p.translate(320, 240);
 		p.rotate((qrand()%360) / 2.0);
+		p.translate(-320, -240);
 		switch (qrand()%5)
 		{
 		case 0:
@@ -202,7 +204,7 @@ void MainWindow::generate()
 		}
 		if (qrand()%10 > 7)
 		{
-			p.rotate((qrand()%360) / 2.0);
+			p.rotate(0);
 			p.setOpacity((qrand()%101) / 100.0 + 0.3);
 			p.drawImage(qrand()%740-50, qrand()%580-50, cliparts.at(qrand()%cliparts.count()));
 		}
