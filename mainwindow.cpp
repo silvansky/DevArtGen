@@ -94,8 +94,35 @@ void MainWindow::generate()
 			return;
 		}
 	}
-	// TODO: add cliparts
-	// transparent canvas
+	if (cliparts.isEmpty())
+	{
+		if (clipartPath.isEmpty())
+		{
+			clipartPath = QFileDialog::getExistingDirectory(this, "Select path with cliparts", lastSelectedDir);
+			if (clipartPath.isEmpty())
+				return;
+		}
+		settings.setValue("clipartPath", clipartPath);
+		lastSelectedDir = clipartPath;
+		settings.setValue("lastSelectedDir", lastSelectedDir);
+		QDir dir(clipartPath);
+		QStringList lightningsList = dir.entryList(QStringList() << "*.png");
+		QImage img;
+		qDebug() << "loading cliparts...";
+		foreach (QString file,  lightningsList)
+		{
+			qDebug() << dir.absoluteFilePath(file);
+			if (img.load(dir.absoluteFilePath(file)))
+			{
+				cliparts << img;
+			}
+		}
+		if (cliparts.isEmpty())
+		{
+			generate();
+			return;
+		}
+	}	// transparent canvas
 	QPixmap canvas(640, 480);
 	canvas.fill(QColor(0, 0, 0, 0).rgba());
 	QPainter p(&canvas);
@@ -172,6 +199,12 @@ void MainWindow::generate()
 			}
 		default:
 			break;
+		}
+		if (qrand()%10 > 7)
+		{
+			p.rotate((qrand()%360) / 2.0);
+			p.setOpacity((qrand()%101) / 100.0 + 0.3);
+			p.drawImage(qrand()%740-50, qrand()%580-50, cliparts.at(qrand()%cliparts.count()));
 		}
 	}
 
