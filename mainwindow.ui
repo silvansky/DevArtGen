@@ -46,6 +46,9 @@
         <height>480</height>
        </size>
       </property>
+      <property name="acceptDrops">
+       <bool>true</bool>
+      </property>
       <property name="text">
        <string/>
       </property>
@@ -62,6 +65,7 @@
    </attribute>
    <addaction name="actionGen"/>
    <addaction name="actionSave"/>
+   <addaction name="actionReset"/>
   </widget>
   <action name="actionGen">
    <property name="text">
@@ -71,6 +75,11 @@
   <action name="actionSave">
    <property name="text">
     <string>save</string>
+   </property>
+  </action>
+  <action name="actionReset">
+   <property name="text">
+    <string>reset</string>
    </property>
   </action>
  </widget>

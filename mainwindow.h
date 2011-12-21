@@ -15,9 +15,12 @@ class MainWindow : public QMainWindow
 public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
+protected:
+	bool eventFilter(QObject * obj, QEvent *evt);
 private slots:
 	void generate();
 	void save();
+	void reset();
 private:
 	Ui::MainWindow *ui;
 	QString dimmersPath;
@@ -30,6 +33,7 @@ private:
 	QList<QImage> dimmers;
 	QList<QImage> lightnings;
 	QList<QImage> cliparts;
+	QImage background;
 };
 
 #endif // MAINWINDOW_H

@@ -4,6 +4,9 @@
 #include <QDebug>
 #include <QDateTime>
 #include <QPainter>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QUrl>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -14,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(ui->actionGen, SIGNAL(triggered()), SLOT(generate()));
 	connect(ui->actionSave, SIGNAL(triggered()), SLOT(save()));
+	connect(ui->actionReset, SIGNAL(triggered()), SLOT(reset()));
 
 	dimmersPath = settings.value("dimmersPath").toString();
 	lightningsPath = settings.value("lightningsPath").toString();
@@ -27,11 +31,69 @@ MainWindow::MainWindow(QWidget *parent) :
 	qsrand(QDateTime::currentMSecsSinceEpoch());
 
 	ui->actionSave->setEnabled(false);
+	ui->actionReset->setVisible(false);
+	ui->result->installEventFilter(this);
 }
 
 MainWindow::~MainWindow()
 {
 	delete ui;
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *evt)
+{
+	if (obj == ui->result)
+	{
+		if (evt->type() == QEvent::DragEnter)
+		{
+			qDebug() << "drag enter...";
+			QDragEnterEvent * dee = (QDragEnterEvent*)(evt);
+			if (dee->mimeData()->hasUrls() && (dee->mimeData()->urls().count() == 1))
+			{
+				dee->accept();
+			}
+		}
+		else if (evt->type() == QEvent::Drop)
+		{
+			QDropEvent * drop = (QDropEvent*)evt;
+			if (drop->mimeData()->hasUrls())
+			{
+				if (drop->mimeData()->urls().count() > 1)
+				{
+					qDebug() << "many files! can\'t handle!";
+				}
+				else
+				{
+					QString file = drop->mimeData()->urls().first().toLocalFile();
+					qDebug() << "got file:" << file;
+					QFileInfo finfo(file);
+					if (finfo.isDir())
+					{
+						qDebug() << "can't handle dir!";
+					}
+					else
+					{
+						if (finfo.size())
+						{
+							// load file
+							if (background.load(file))
+							{
+								drop->accept();
+								ui->actionReset->setVisible(true);
+							}
+							else
+								qDebug() << "wrong file format!";
+						}
+						else
+						{
+							qDebug() << "file is empty!";
+						}
+					}
+				}
+			}
+		}
+	}
+	return QMainWindow::eventFilter(obj, evt);
 }
 
 void MainWindow::generate()
@@ -122,7 +184,8 @@ void MainWindow::generate()
 			generate();
 			return;
 		}
-	}	// transparent canvas
+	}
+	// transparent canvas
 	QPixmap canvas(640, 480);
 	canvas.fill(QColor(0, 0, 0, 0).rgba());
 	QPainter p(&canvas);
@@ -133,9 +196,16 @@ void MainWindow::generate()
 
 	p.save();
 
+	int parts = 1000;
+
+	if (!background.isNull())
+	{
+		parts = 50;
+		p.drawImage(0, 0, background);
+	}
 
 
-	for (int i = 0; i < qrand()%20000; i++)
+	for (int i = 0; i < qrand()%parts+parts; i++)
 	{
 		c.setRgb(qrand()%255, qrand()%255, qrand()%255, qrand()%155+100);
 		p.setPen(QPen(c, qrand()%4 + 1));
@@ -231,6 +301,15 @@ void MainWindow::generate()
 		p.setOpacity((qrand()%101) / 100.0 + 0.3);
 		p.drawImage(0, 0, dimmers.at(n));
 	}
+
+	p.setPen(QColor(255, 255, 255, 150));
+	p.setBrush(QColor(255, 255, 255, 150));
+	QFont f("Anonymous Pro", 12);
+	p.setFont(f);
+	QFontMetrics fm(f);
+	QString copyright = QChar(0x00A9) + QString(" %1 vtualetius").arg(QDateTime::currentDateTime().date().year());
+	QRect br = fm.boundingRect(copyright);
+	p.drawText(630 - br.width(), 480 - br.height(), copyright);
 	p.end();
 	ui->result->setPixmap(canvas);
 	currentImage = canvas;
@@ -250,4 +329,10 @@ void MainWindow::save()
 			settings.setValue("lastSaveDir", lastSaveDir);
 		}
 	}
+}
+
+void MainWindow::reset()
+{
+	background = QImage();
+	ui->actionReset->setVisible(false);
 }
