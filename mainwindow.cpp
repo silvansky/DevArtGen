@@ -211,7 +211,7 @@ void MainWindow::generate()
 	for (int i = 0; i < qrand()%parts+parts; i++)
 	{
 		// each color is tone.color +- 20
-		c.setRgb(tone.red() + qrand()%40-20, tone.green() + qrand()%40-20, tone.blue() + qrand()%40-20, qrand()%155+100);
+		c.setRgb(tone.red() + abs(qrand()%40-20), tone.green() + abs(qrand()%40-20), tone.blue() + abs(qrand()%40-20), qrand()%155+100);
 		p.setPen(QPen(c, qrand()%4 + 1));
 		p.setBrush(c);
 		p.translate(320, 240);
