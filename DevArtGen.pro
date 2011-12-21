@@ -26,4 +26,6 @@ OTHER_FILES += \
 	icon.rc \
 	icon.icns \
 	icon.ico \
-	Info.plist
+	Info.plist \
+	mac_cp_frameworks \
+	mac_prepare_to_release

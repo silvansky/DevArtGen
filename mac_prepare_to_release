@@ -1,0 +1,23 @@
+#!/bin/bash
+cd /Applications
+
+appname=DevArtGen.app
+
+# usage: "patchFile file frameworkName"
+function patchFile {
+	# file to patch
+	file=$1
+	# frmework
+	FW=$2
+	# patching...
+	install_name_tool -change $FW.framework/Versions/Current/$FW @executable_path/../Frameworks/$FW.framework/Versions/Current/$FW $appname/Contents/$file
+}
+
+# executable deps - core, gui
+
+patchFile MacOS/DevArtGen QtCore
+patchFile MacOS/DevArtGen QtGui
+
+# QtGui deps - core
+
+patchFile Frameworks/QtGui.framework/Versions/Current/QtGui QtCore
