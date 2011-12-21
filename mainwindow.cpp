@@ -191,23 +191,27 @@ void MainWindow::generate()
 	QPainter p(&canvas);
 	p.setRenderHint(QPainter::Antialiasing);
 
-	// draw some random shapes with random colors
-	QColor c;
-
 	p.save();
 
 	int parts = 1000;
 
+	// background
 	if (!background.isNull())
 	{
 		parts = 50;
 		p.drawImage(0, 0, background);
 	}
 
+	// draw some random shapes with random colors
+	QColor c;
+
+	// let's get the common tone of the picture...
+	QColor tone(qrand()%255, qrand()%255, qrand()%255);
 
 	for (int i = 0; i < qrand()%parts+parts; i++)
 	{
-		c.setRgb(qrand()%255, qrand()%255, qrand()%255, qrand()%155+100);
+		// each color is tone.color +- 20
+		c.setRgb(tone.red() + qrand()%40-20, tone.green() + qrand()%40-20, tone.blue() + qrand()%40-20, qrand()%155+100);
 		p.setPen(QPen(c, qrand()%4 + 1));
 		p.setBrush(c);
 		p.translate(320, 240);
