@@ -10,7 +10,7 @@ function patchFile {
 	# frmework
 	FW=$2
 	# patching...
-	install_name_tool -change $FW.framework/Versions/Current/$FW @executable_path/../Frameworks/$FW.framework/Versions/Current/$FW $appname/Contents/$file
+	install_name_tool -change $FW.framework/Versions/4/$FW @executable_path/../Frameworks/$FW.framework/Versions/4/$FW $appname/Contents/$file
 }
 
 # executable deps - core, gui
