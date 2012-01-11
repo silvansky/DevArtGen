@@ -190,6 +190,7 @@ void MainWindow::generate()
 	canvas.fill(QColor(0, 0, 0, 0).rgba());
 	QPainter p(&canvas);
 	p.setRenderHint(QPainter::Antialiasing);
+	p.setRenderHint(QPainter::SmoothPixmapTransform);
 
 	p.save();
 
